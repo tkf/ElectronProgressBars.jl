@@ -3,6 +3,13 @@ uuid = "02f84dbd-58fa-4717-bf14-614f8f30f33d"
 authors = ["Takafumi Arakaki <aka.tkf@gmail.com>"]
 version = "0.1.0"
 
+[deps]
+ArgCheck = "dce04be8-c92d-5529-be00-80e4d2c0e197"
+Electron = "a1bb12fb-d4d1-54b4-b10a-ee7951ef7ad3"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+
 [compat]
 julia = "1.2"
 

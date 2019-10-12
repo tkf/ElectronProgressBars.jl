@@ -1,0 +1,45 @@
+<html>
+   <head>
+      <link rel="stylesheet" href="main.css">
+   </head>
+   <body>
+     <div id="container"></div>
+     <script src="main.js"></script>
+     <script>
+       newRootBar({
+	   progress: 0,
+	   progresstext: "0.0 %",
+	   title: "main",
+	   barid: "1-1"
+       });
+       newSubBar({
+	   progress: 0.1,
+	   progresstext: "10.0 %",
+	   title: "main sub",
+	   parentid: "1-1",
+	   barid: "1-2"
+       });
+       newSubBar({
+	   progress: 0.8,
+	   progresstext: "80.0 %",
+	   title: "main sub sub",
+	   parentid: "1-2",
+	   barid: "1-3"
+       });
+
+       newRootBar({
+	   progress: 0.2,
+	   progresstext: "20.0 %",
+	   title: "bg",
+	   barid: "2-1"
+       });
+       newSubBar({
+	   progress: 0.9,
+	   progresstext: "90.0 %",
+	   title: "bg sub",
+	   parentid: "2-1",
+	   barid: "2-2"
+       });
+     </script>
+   </body>
+</html>

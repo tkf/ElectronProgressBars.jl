@@ -1,0 +1,54 @@
+.progressContainer {
+    box-sizing: border-box;   /* to use relative width with padding */
+    padding: 10px 0 10px 10px;
+    width: 100%;
+}
+.progressWrapper {
+    height: 50px;
+    width: 100%;
+    position: relative;
+    background: #ddd;
+}
+.progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    height: 100%;
+    width: 0%;
+
+    /* https://css-tricks.com/stripes-css/ */
+    background:
+	/* On "top" */
+	repeating-linear-gradient(
+	    45deg,
+	    transparent,
+	    transparent 10px,
+	    #ccc 10px,
+	    #ccc 20px
+	),
+	/* on "bottom" */
+	linear-gradient(
+	    to bottom,
+	    #eee,
+	    #999
+	);
+}
+.messageWrapper {
+    position: absolute;
+    z-index: 10;
+
+    /* Centering message box: */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.message {
+    position: relative;
+    color: black;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.7);
+    font-family: monospace;
+}
