@@ -1,74 +1,84 @@
+class ProgressBar {
+    constructor(param, container) {
+	this.barContainer = document.createElement("div");
+	this.barWrapper = document.createElement("div");
+	this.barDiv = document.createElement("div");
+	this.msgWrapper = document.createElement("div");
+	this.msgDiv = document.createElement("div");
+	this.barContainer.id = this.constructor.containerDomId(param.barid);
+	this.barDiv.id = this.constructor.barDomId(param.barid);
+	this.barContainer.classList.add("progressContainer");
+	this.barWrapper.classList.add("progressWrapper");
+	this.barDiv.classList.add("progress");
+	this.msgWrapper.classList.add("messageWrapper");
+	this.msgDiv.classList.add("message");
+	this.barWrapper.appendChild(this.barDiv);
+	this.msgWrapper.appendChild(this.msgDiv);
+	this.barWrapper.appendChild(this.msgWrapper);
+	this.barContainer.appendChild(this.barWrapper);
+	container.appendChild(this.barContainer);
+	this._setProgress(param);
+
+	this.constructor.bars[param.barid] = this;
+    }
+
+    static bars = {};
+
+    static lookup(barid) {
+	return this.bars[barid]
+    }
+
+    static containerDomId(barid) {
+	return "container-" + barid;
+    }
+
+    static barDomId(barid) {
+	return "bar-" + barid;
+    }
+
+    _setProgress(param) {
+	this.barDiv.style.width = (param.progress * 100) + "%";
+	var txt = param.title;
+	if (param.message) {
+	    txt = txt + " " + param.message;
+	};
+	txt = txt + " (" + param.progresstext + ")";
+	this.msgDiv.innerText = txt;
+    }
+
+    setProgress(param) {
+	this._setProgress(param);
+	this.constructor.removeFinished(param);
+    }
+
+    static removeFinished(param) {
+	var bars = this.bars;
+	param.finished.forEach(function (barid) {
+	    var bar = ProgressBar.lookup(barid);
+	    var div = bar.barContainer;
+	    div.parentNode.removeChild(div);
+	    delete bars[barid];
+	});
+    }
+
+    newSubBar(param) {
+	return new ProgressBar(param, this.barContainer);
+    }
+}
+
 function newRootBar(param) {
     var container = document.getElementById("container");
-    _newBar(container, param);
-    return;
-}
-
-function containerDomId(barid) {
-    return "container-" + barid;
-}
-
-function barDomId(barid) {
-    return "bar-" + barid;
-}
-
-function getBarContainerById(barid) {
-    return document.getElementById(containerDomId(barid));
-}
-
-function getBarDomById(barid) {
-    return document.getElementById(barDomId(barid));
-}
-
-function _newBar(container, param) {
-    var barContainer = document.createElement("div");
-    var barWrapper = document.createElement("div");
-    var barDiv = document.createElement("div");
-    var msgWrapper = document.createElement("div");
-    var msgDiv = document.createElement("div");
-    barContainer.id = containerDomId(param.barid);
-    barDiv.id = barDomId(param.barid);
-    barContainer.classList.add("progressContainer");
-    barWrapper.classList.add("progressWrapper");
-    barDiv.classList.add("progress");
-    msgWrapper.classList.add("messageWrapper");
-    msgDiv.classList.add("message");
-    barWrapper.appendChild(barDiv);
-    msgWrapper.appendChild(msgDiv);
-    barWrapper.appendChild(msgWrapper);
-    barContainer.appendChild(barWrapper);
-    container.appendChild(barContainer);
-    _setProgress(barDiv, param);
+    new ProgressBar(param, container);
 }
 
 function setProgress(param) {
-    var barDiv = getBarDomById(param.barid);
-    _setProgress(barDiv, param);
-    removeFinished(param);
-    return;
-}
-
-function _setProgress(barDiv, param) {
-    barDiv.style.width = (param.progress * 100) + "%";
-    txt = param.title;
-    if (param.message) {
-	txt = txt + " " + param.message;
-    };
-    txt = txt + " (" + param.progresstext + ")";
-    msgElm = barDiv.parentNode.getElementsByClassName("message")[0];
-    msgElm.innerText = txt;
+    ProgressBar.lookup(param.barid).setProgress(param);
 }
 
 function newSubBar(param) {
-    var container = getBarContainerById(param.parentid);
-    _newBar(container, param);
-    return;
+    ProgressBar.lookup(param.parentid).newSubBar(param);
 }
 
 function removeFinished(param) {
-    param.finished.forEach(function (barid) {
-	div = getBarContainerById(barid);
-	div.parentNode.removeChild(div);
-    });
-    return;
+    ProgressBar.removeFinished(param);
 }

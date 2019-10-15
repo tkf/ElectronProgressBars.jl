@@ -40,6 +40,12 @@
 	   parentid: "2-1",
 	   barid: "2-2"
        });
+
+       var bar21 = ProgressBar.lookup("2-1");
+       bar21.barContainer.onclick = function() {
+	   console.log("Removing 2-1 and 2-2");
+	   removeFinished({finished: ["2-1", "2-2"]});
+       };
      </script>
    </body>
 </html>
