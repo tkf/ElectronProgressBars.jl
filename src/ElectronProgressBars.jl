@@ -2,6 +2,7 @@ module ElectronProgressBars
 
 import JSON
 import Logging
+import LoggingExtras
 using ArgCheck: @argcheck
 using Electron: Window, load
 using Printf: @sprintf
@@ -245,5 +246,29 @@ Logging.shouldlog(::ElectronProgressBarLogger, level, _module, group, id) =
     true
 
 Logging.min_enabled_level(::ElectronProgressBarLogger) = Logging.BelowMinLevel
+
+"""
+    install_logger()
+
+Install `ElectronProgressBarLogger` using `LoggingExtras.DemuxLogger`.
+"""
+install_logger() = install_logger(singleton_logger())
+function install_logger(logger::ElectronProgressBarLogger)
+    global previous_logger
+    previous_logger = Logging.global_logger(LoggingExtras.DemuxLogger(logger))
+end
+
+"""
+    uninstall_logger()
+
+Rollback the global logger to the one before last call of `install_logger`.
+"""
+function uninstall_logger()
+    global previous_logger
+    previous_logger === nothing && return
+    ans = Logging.global_logger(previous_logger)
+    previous_logger = nothing
+    return ans
+end
 
 end # module
