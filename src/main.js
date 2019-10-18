@@ -22,7 +22,8 @@ class ProgressBar {
 	this.constructor.bars[param.barid] = this;
     }
 
-    static bars = {};
+    // Doesn't work with Electron 4.x:
+    // static bars = {};
 
     static lookup(barid) {
 	return this.bars[barid]
@@ -65,6 +66,7 @@ class ProgressBar {
 	return new ProgressBar(param, this.barContainer);
     }
 }
+ProgressBar.bars = {};
 
 function newRootBar(param) {
     var container = document.getElementById("container");
