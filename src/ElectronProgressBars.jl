@@ -259,7 +259,8 @@ function Logging.handle_message(
     message = nothing,
     _...
 )
-    if progress isa Real && progress <= 1
+    if progress isa Real && (progress < 1 || isnan(progress))
+        progress = isnan(progress) ? 0.0 : progress
         _set_progress(logger, id, title, max(0.0, progress), message)
     elseif progress == "done" || (progress isa Real && progress > 1)
         _remove_progress(logger, id)
