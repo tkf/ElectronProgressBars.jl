@@ -44,6 +44,9 @@ class ProgressBar {
 	    txt = txt + " " + param.message;
 	};
 	txt = txt + " (" + param.progresstext + ")";
+	if (param.etatext) {
+	    txt = txt + " " + param.etatext;
+	}
 	this.msgDiv.innerText = txt;
     }
 

@@ -37,10 +37,12 @@ const LogID = Symbol
 
 struct ProgressBarWindow
     bars::Dict{TaskID, Vector{LogID}}
+    starttime::Dict{Tuple{TaskID, LogID}, Float64}
     window::Window
 end
 
 ProgressBarWindow() = ProgressBarWindow(
+    Dict(),
     Dict(),
     Window(
         main_html(),
@@ -135,6 +137,22 @@ end
 
 barid(taskid::TaskID, logid::LogID) = "bar-$taskid-$logid"
 
+function durationstring(eta)
+    isfinite(eta) || return "?"
+    s = floor(Int, eta)
+    m, s = divrem(s, 60)
+    h, m = divrem(m, 60)
+    d, h = divrem(h, 24)
+    if d >= 1
+        dunit = d == 1 ? "day" : "days"
+        hunit = h == 1 ? "hour" : "hours"
+        h == 0 && return "$d $dunit"
+        return "$d $dunit $h $hunit"
+    else
+        return @sprintf "%02d:%02d:%02d" h m s
+    end
+end
+
 # for debugging
 _gset_progress(
     progress::Real,
@@ -152,6 +170,7 @@ function _set_progress(
     progress::Real,
     message::Union{AbstractString, Nothing};
     taskid::TaskID = _taskid(),
+    now::Float64 = time(),
 )
     @argcheck 0 <= progress <= 1
 
@@ -170,6 +189,7 @@ function _set_progress(
         bars = get!(w.bars, taskid, [])
         if isempty(bars)
             push!(bars, logid)
+            w.starttime[taskid, logid] = now
             p = JSON.json(param)
             run(w.window, "newRootBar($p)")
             return
@@ -182,11 +202,16 @@ function _set_progress(
                 param...,
             )
             push!(bars, logid)
+            w.starttime[taskid, logid] = now
             p = JSON.json(param)
             run(w.window, "newSubBar($p)")
         else
+            duration = now - w.starttime[taskid, logid]
+            eta = duration * (1 / progress - 1)
             param = (
                 finished = barid.(taskid, bars[idx + 1:end]),
+                eta = eta,
+                etatext = string("ETA ", durationstring(eta)),
                 param...,
             )
             deleteat!(bars, idx + 1:length(bars))
