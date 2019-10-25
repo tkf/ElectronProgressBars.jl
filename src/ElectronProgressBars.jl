@@ -1,11 +1,12 @@
 module ElectronProgressBars
 
 import JSON
-import Logging
-import LoggingExtras
 using ArgCheck: @argcheck
 using Electron: Window, load
+using Logging: Logging, global_logger
 using Printf: @sprintf
+
+include("router.jl")
 
 function locking(f, l)
     lock(l)
@@ -276,12 +277,12 @@ Logging.min_enabled_level(::ElectronProgressBarLogger) = Logging.BelowMinLevel
 """
     install_logger()
 
-Install `ElectronProgressBarLogger` using `LoggingExtras.DemuxLogger`.
+Install `ElectronProgressBarLogger` to global logger.
 """
 install_logger() = install_logger(singleton_logger())
 function install_logger(logger::ElectronProgressBarLogger)
     global previous_logger
-    previous_logger = Logging.global_logger(LoggingExtras.DemuxLogger(logger))
+    previous_logger = global_logger(ProgressLogRouter(global_logger(), logger))
 end
 
 """
@@ -292,7 +293,7 @@ Rollback the global logger to the one before last call of `install_logger`.
 function uninstall_logger()
     global previous_logger
     previous_logger === nothing && return
-    ans = Logging.global_logger(previous_logger)
+    ans = global_logger(previous_logger)
     previous_logger = nothing
     return ans
 end
